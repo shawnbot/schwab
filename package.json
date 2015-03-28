@@ -1,0 +1,24 @@
+{
+  "name": "schwab",
+  "version": "0.1.0",
+  "description": "Scrape schwab.com for your banking transaction history",
+  "main": "index.js",
+  "bin": {
+    "schwab": "cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Shawn Allen",
+    "url": "https://github.com/shawnbot"
+  },
+  "license": "CC0",
+  "dependencies": {
+    "colors": "^1.0.3",
+    "event-stream": "^3.3.0",
+    "phantomjs": "^1.9.16",
+    "prompt": "^0.2.14",
+    "yargs": "^3.6.0"
+  }
+}
