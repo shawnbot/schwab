@@ -47,11 +47,17 @@ or tab-separated values, try out [tito], which reads NDJSON by default:
 schwab | tito --write tsv > transactions.tsv
 ```
 
+Or, just pipe it into [dat] for storage:
+```sh
+schwab | dat import --json
+```
+
 Transactions objects should all have the following columns:
 
 * `withdrawal`: the amount withdrawn, as a dollar-formatted string e.g. `$3,124.50`
 * `deposit`: the amount deposited, also as a dollar-formatted string
-* `description`: the transaction description, often in debit card shorthand e.g. `NY TIMES NATL SALE800-698-4637, NY #0000`
+* `description`: the transaction description, often in debit card shorthand e.g.
+  `NY TIMES NATL SALE800-698-4637, NY #0000`
 * `balance`: the running balance as of each transaction as a dollar-formatted string
 * `check`: the check number, if this transaction involves a written check
 * `type`: the transaction type, one of:
@@ -69,3 +75,4 @@ Transactions objects should all have the following columns:
 [npm]: https://www.npmjs.com/
 [newline delimited JSON]: http://ndjson.org/
 [tito]: https://github.com/shawnbot/tito
+[dat]: http://dat-data.com/
