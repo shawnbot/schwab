@@ -62,19 +62,20 @@ function listAccounts() {
     if (allAccounts) {
       // XXX because you can't shift() an array returned by page.evaluate()
       accounts = [].slice.call(allAccounts);
-      if (options.acct) {
-        var lookup = makeMap(options.acct.split(','));
+      if (options.account) {
+        var lookup = makeMap(options.account.split(','));
         accounts = accounts.filter(function(d) {
-          return lookup.hasOwnProperty(d.name);
+          return lookup.hasOwnProperty(d.name)
+              || lookup.hasOwnProperty(d.number);
         });
       }
 
-      log('accounts:', allAccounts
+      log('accounts:', accounts
         .map(function(d) { return d.name; })
         .join(', '));
       nextAccount();
     } else {
-      return die('Unable to load any accounts:', selector);
+      return die('unable to load any accounts:', selector);
     }
   });
 }
@@ -99,10 +100,12 @@ function getAccounts(selector) {
     var table = document.querySelector(selector);
     var rows = table.querySelectorAll('tr.data-row');
     return [].map.call(rows, function(tr, i) {
-      var a = tr.querySelector('td:first-child a');
+      var name = tr.querySelector('td:first-child a'),
+          number = tr.querySelector('td:nth-child(2) a');
       return {
-        name: a.textContent,
-        action: a.href.replace(/^javascript:/, '')
+        name: name.textContent,
+        action: name.href.replace(/^javascript:/, ''),
+        number: number.textContent.slice(-4)
       };
     });
   }, selector);
