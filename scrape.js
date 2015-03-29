@@ -184,6 +184,13 @@ function loadTransactions() {
         if (after.length) {
           log('- skipped', after.length, 'rows after', options.end);
         }
+      } else if (options.before) {
+        while (rows.length && rows[0].date >= options.before) {
+          after.push(rows.shift());
+        }
+        if (after.length) {
+          log('- skipped', after.length, 'rows after', options.before);
+        }
       }
 
       // drop rows that come before the start date
@@ -193,6 +200,13 @@ function loadTransactions() {
         }
         if (before.length) {
           log('- ignored', before.length, 'rows before', options.start);
+        }
+      } else if (options.after) {
+        while (rows.length && rows[rows.length - 1].date <= options.after) {
+          before.push(rows.pop());
+        }
+        if (before.length) {
+          log('- ignored', before.length, 'rows before', options.after);
         }
       }
 
