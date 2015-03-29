@@ -37,7 +37,7 @@ page.open(urls.login, function login(status) {
     die('Unable to load login page:', status);
   }
 
-  log('Logging in as', options.username, '...');
+  log('logging in as', options.username, '...');
 
   page.evaluate(function(username, password) {
     $('#SignonAccountNumber').val(username);
@@ -48,7 +48,7 @@ page.open(urls.login, function login(status) {
   state = 'auth';
   nextPage(function(url) {
     if (url === urls.loggedIn) {
-      log('Logged in!');
+      log('> logged in!');
       listAccounts();
     } else {
       defaultHandler(url);
@@ -115,25 +115,25 @@ function getAccounts(selector) {
 function nextAccount() {
   state = 'account';
   if (!accounts.length) {
-    return exit('All done!');
+    return exit('all done!');
   }
-  log('Loading next account of', accounts.length);
+  log('loading next account of', accounts.length);
   var acct = accounts.shift();
   currentAccount = acct;
-  log('Account:', acct.name);
+  log('account name:', acct.name);
   var submitted = page.evaluate(function(action) {
     return eval(action);
   }, acct.action);
-  log('submitted:', submitted);
+  // log('submitted:', submitted);
   nextPage(function(url) {
     loadTransactions();
   });
 }
 
 function loadTransactions() {
-  log('Waiting for data on', page.url);
+  log('waiting for data on', page.url);
   waitFor('#tbldata', function(selector) {
-    log('Reading transactions from:', selector);
+    log('reading transactions...');
     var data = page.evaluate(function(selector) {
       var table = document.querySelector(selector);
       if (!table) return {error: 'not found: ' + selector};
@@ -174,7 +174,7 @@ function loadTransactions() {
       var rows = [].slice.call(data.rows);
       var before = [];
       var after = [];
-      log('data:', rows.length, 'rows');
+      log('> got', rows.length, 'rows');
 
       // drop rows that come after the end date
       if (options.end) {
@@ -203,7 +203,7 @@ function loadTransactions() {
 
       // if there's a next link *and* there were no early transactions..
       if (data.next && !before.length) {
-        log('Loading next page...');
+        log('loading next page...');
         var timeout = setTimeout(function() {
           die('Timed out!');
         }, 10000);
@@ -223,7 +223,7 @@ function loadTransactions() {
     }
 
     // if we haven't returned yet, we're done with this account
-    log('All done with account:', currentAccount.name);
+    log('done with account:', currentAccount.name);
     nextAccount();
   });
 }
@@ -244,7 +244,7 @@ function waitFor(selector, done, timeout) {
         return done(selector);
       }
       if (elapsed > timeout) {
-        return die('Timed out waiting for', selector, 'on', page.url);
+        return die('timed out waiting for', selector, 'on', page.url);
       }
       setTimeout(wait, tick);
     }
