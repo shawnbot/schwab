@@ -142,7 +142,7 @@ function loadTransactions() {
         'date', 'type', 'check', 'description',
         'withdrawal', 'deposit', 'balance'
       ];
-      var data = {};
+      var data = {rows: []};
       var trim = function(str) {
         return str.replace(/(^\s+)|(\s+$)/g, '');
       };
@@ -151,17 +151,34 @@ function loadTransactions() {
         bits.unshift(bits.pop());
         return bits.join('-');
       };
-      // skip the first one
-      data.rows = [].slice.call(rows, 1)
-        .map(function(row, i) {
+
+      try {
+        var status = null;
+        [].forEach.call(rows, function(row, i) {
           var d = {};
           var cells = row.querySelectorAll('td');
-          cols.forEach(function(key, j) {
-            d[key] = trim(cells[j].textContent) || null;
-          });
+          for (var j = 0; j < cols.length; j++) {
+            var cell = cells[j];
+            if (cell.hasAttribute('colspan')) {
+              switch (+cell.getAttribute('colspan')) {
+                case 7:
+                  var text = trim(cell.textContent),
+                      match = text.match(/(\w+) Transactions/);
+                  if (match) status = match[1].toLowerCase();
+                  break;
+              }
+              return;
+            }
+            var key = cols[j];
+            d[key] = trim(cell.textContent) || null;
+          }
           d.date = reformatDate(d.date);
-          return d;
+          if (status) d.status = status;
+          data.rows.push(d);
         });
+      } catch (error) {
+        return {error: error};
+      }
 
       var next = document.querySelector('a[id$=lnkNext]');
       if (next) {
@@ -232,6 +249,7 @@ function loadTransactions() {
       }
     } else if (data.rows) {
       // zero rows should mean we're at the end of this account history
+      log('zero rows: end of this account history (?)');
     } else {
       return die('Error parsing data:', JSON.stringify(data.error || data.rows));
     }
