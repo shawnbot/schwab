@@ -245,7 +245,7 @@ function loadTransactions() {
 function waitFor(selector, done, timeout) {
   if (!timeout) timeout = 5000;
   var start = Date.now();
-  var tick = 200;
+  var tick = 250;
   var select = function(selector) {
     return !!document.querySelector(selector);
   };
