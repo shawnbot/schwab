@@ -28,10 +28,12 @@ delete options._;
 // return process.exit();
 
 var fs = require('fs');
+var path = require('path');
 var prompt = require('prompt');
 var child = require('child_process');
 var es = require('event-stream');
 var colors = require('colors');
+var phantomjs = require('phantomjs').path;
 
 var output = args.length
   ? fs.createWriteStream(args.shift())
@@ -54,7 +56,7 @@ prompt.addProperties(options, [
 ], function(error, options) {
   if (error) return console.error('\n' + String(error).red);
 
-  var phantomjs = __dirname + '/node_modules/.bin/phantomjs';
+  // var phantomjs = __dirname + '/node_modules/.bin/phantomjs';
   var args = Object.keys(options)
     .filter(function(opt) {
       return opt.length > 1;
@@ -65,8 +67,21 @@ prompt.addProperties(options, [
   // console.log('args:', args);
   // process.exit();
 
-  console.warn('Spawning phantomjs...'.green);
-  var proc = child.spawn(phantomjs, ['scrape.js'].concat(args));
+  console.warn('Spawning phantomjs...'.green, phantomjs);
+
+  var scrape = path.join(__dirname, 'scrape.js');
+  var proc = child.spawn(phantomjs, [scrape].concat(args))
+    .on('error', function(error) {
+      console.error('Error:', String(error).red);
+    })
+    .on('exit', function(status) {
+      if (status !== 0) {
+        console.error('phantomjs exited with status code %s'.red, status);
+      }
+    });
+
+  proc.stderr.pipe(process.stderr);
+
   proc.stdout
     .pipe(es.split())
     .pipe(es.map(function(line, next) {
