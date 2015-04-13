@@ -1,6 +1,6 @@
 {
   "name": "schwab",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Scrape schwab.com for your banking transaction history",
   "main": "index.js",
   "bin": {
